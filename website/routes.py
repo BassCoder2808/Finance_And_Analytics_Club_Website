@@ -3,9 +3,9 @@ import secrets
 import urllib
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort, jsonify, session
-from website.forms import RegistrationForm, LoginForm, AccountUpdateForm, RequestResetForm, ResetPasswordForm, SuggestionForm, PostForm, HelpForm
+from website.forms import RegistrationForm, LoginForm, AccountUpdateForm, RequestResetForm, ResetPasswordForm, SuggestionForm, PostForm, HelpForm, QuestionForm, AnswerForm
 from website import app, db, bcrypt, mail, oauth, google
-from website.models import User, Post, Feedback
+from website.models import User, Post, Feedback, Question, Answer
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
 from requests import get
@@ -277,3 +277,71 @@ def user_posts(username):
     posts = Post.query.filter_by(author=user).order_by(
         Post.date_posted.desc()).paginate(page=page, per_page=2)
     return render_template('user_posts.html', posts=posts, user=user)
+
+
+@app.route("/question/new", methods=['GET', 'POST'])
+@login_required
+def new_question():
+    form = QuestionForm()
+    if form.validate_on_submit():
+        print("yess")
+        question = Question(title=form.title.data, content=form.content.data, author=current_user)
+        db.session.add(question)
+        db.session.commit()
+        flash("Your question has been successfully created!!!", 'success')
+        return redirect(url_for('all_questions'))
+    return render_template('create_question.html', title='New Question', form=form, legend="New Question")
+
+
+@app.route("/question/<int:question_id>")
+def question(question_id):
+    question = Question.query.get_or_404(question_id)
+    return render_template('question.html', title=question.title, post=question)
+
+
+@app.route("/question/<int:question_id>/update", methods=['GET', 'POST'])
+@login_required
+def update_question(question_id):
+    question = Question.query.get_or_404(question_id)
+    if question.author != current_user:
+        abort(403)
+    form = QuestionForm()
+    if form.validate_on_submit():
+        question.title = form.title.data
+        question.content = form.content.data
+        db.session.commit()
+        flash("Your question has been updated!!", 'success')
+        return redirect(url_for('question', question_id=question.id))
+    if request.method == "GET":
+        form.title.data = question.title
+        form.content.data = question.content
+    return render_template('create_question.html', title='Update Question', form=form, legend="Update Question")
+
+
+@app.route("/question/<int:question_id>/delete", methods=['POST'])
+@login_required
+def delete_question(question_id):
+    question = Question.query.get_or_404(question_id)
+    if question.author != current_user:
+        abort(403)
+    db.session.delete(question)
+    db.session.commit()
+    flash("Your question has been deleted", "success")
+    return redirect(url_for("all_questions"))
+
+
+@app.route("/questions")
+@login_required
+def all_questions():
+    page = request.args.get('page', 1, type=int)
+    questions = Question.query.order_by(Question.date_posted.desc()).paginate(page=page, per_page=5)
+    return render_template('allQuestions.html', posts=questions)
+
+
+@app.route("/user/questions/<string:username>")
+def user_questions(username):
+    page = request.args.get('page', 1, type=int)
+    user = User.query.filter_by(name=username).first_or_404()
+    questions = Question.query.filter_by(author=user).order_by(
+        Question.date_posted.desc()).paginate(page=page, per_page=5)
+    return render_template('user_questions.html', posts=questions, user=user)

@@ -31,6 +31,12 @@
                                 <a href="{{ url_for('new_post') }}">Create a post</a>
                             </li>
                             <li>
+                                <a href="{{ url_for('all_questions') }}">Get Your Answes</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('new_question') }}">Post a new Question</a>
+                            </li>
+                            <li>
                                 <a href="{{ url_for('logout') }}">LogOut</a>
                             </li>
                         </ul>
@@ -46,11 +52,11 @@
                     {% endif %}
                 </nav>
             </header>
-            
+
             <section>
 
             <div class = "image">
-                
+
             </div>
 
             <div class = "content">
@@ -65,7 +71,7 @@
                     <li><a href = "{{ url_for('detect_posture') }}">Try Our Website!!!</a></li>
 
                     <div class = "vertical-line"></div>
-                    
+
                     <li><a href = "{{ url_for('suggestions') }}">Contact Us</a></li>
                 </ul>
 

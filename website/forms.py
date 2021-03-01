@@ -90,3 +90,15 @@ class HelpForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
     submit = SubmitField('Post')
+
+
+class QuestionForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    content = TextAreaField('Question in Detail', validators=[DataRequired()])
+    submit = SubmitField('Post')
+
+
+class AnswerForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    content = TextAreaField('Answer in Detail', validators=[DataRequired()])
+    submit = SubmitField('Post')

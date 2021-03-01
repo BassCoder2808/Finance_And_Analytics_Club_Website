@@ -17,6 +17,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
     feedbacks = db.relationship('Feedback', backref='customer', lazy=True)
+    questions = db.relationship('Question', backref='author', lazy=True)
 
     def get_reset_token(self, expires_sec=1800):
         s = Serializer(app.config['SECRET_KEY'], expires_in=expires_sec)
@@ -45,6 +46,29 @@ class Post(db.Model):
 
     def __repr__(self):
         return f"Post('{self.title}','{self.date_posted}','{self.content}')"
+
+
+class Question(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(256), nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    answers = db.relationship('Answer', backref='answer', lazy=True)
+
+    def __repr__(self):
+        return f"Question No {self.id} with title {self.title}"
+
+
+class Answer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(256), nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    content = db.Column(db.Text, nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Answer No {self.id} with title {self.title}"
 
 
 class Feedback(db.Model):
