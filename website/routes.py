@@ -9,6 +9,9 @@ from website.models import User, Post, Feedback, Question, Answer
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
 from requests import get
+from flask_msearch import Search
+search = Search()
+search.init_app(app)
 
 
 @app.route("/")
@@ -345,3 +348,18 @@ def user_questions(username):
     questions = Question.query.filter_by(author=user).order_by(
         Question.date_posted.desc()).paginate(page=page, per_page=5)
     return render_template('user_questions.html', posts=questions, user=user)
+
+
+@app.route("/search")
+def w_search():
+    keyword = request.args.get('inputEmail4')
+    # results = Post.query.msearch(keyword, fields=['title'], limit=20).filter(...)
+    # # or
+    # results = Post.query.filter(...).msearch(keyword, fields=['title'], limit=20).filter(...)
+    # # elasticsearch
+    # keyword = "title:book AND content:read"
+    # # more syntax please visit https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+    page = request.args.get('page', 1, type=int)
+    results = Question.query.msearch(keyword, limit=20).order_by(
+        Question.date_posted.desc()).paginate(page=page, per_page=5)
+    return render_template('allQuestions.html', posts=results)

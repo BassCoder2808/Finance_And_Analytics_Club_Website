@@ -1,5 +1,14 @@
 {% extends 'layout.html' %}
 {% block content %}
+<form class="row g-3" method="GET" action="search">
+<div class="col-md-6">
+<label for="inputEmail4" class="form-label">Search</label>
+<input type="text" class="form-control" id="inputEmail4" name="inputEmail4">
+</div>
+<div class="col-12">
+<button type="submit" class="btn btn-primary">Search Questions</button>
+</div>
+</form>
   {% for post in posts.items %}
       <article class="media content-section">
         <!-- <img class="rounded-circle article-img" src="{{ url_for('static',filename = 'profile_pics/' + post.author.image_file) }}"> -->

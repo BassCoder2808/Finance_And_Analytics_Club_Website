@@ -6,9 +6,15 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from authlib.integrations.flask_client import OAuth
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '0e1fb822dfe418183a89f8eac08e6efe'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['MSEARCH_INDEX_NAME'] = 'msearch'
+app.config['MSEARCH_BACKEND'] = 'whoosh'
+app.config['MSEARCH_PRIMARY_KEY'] = 'id'
+app.config['MSEARCH_ENABLE'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
