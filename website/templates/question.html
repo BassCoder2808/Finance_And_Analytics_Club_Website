@@ -17,6 +17,9 @@
       <p class="article-content">{{ post.content }}</p>
     </div>
   </article>
+  {% if current_user.email in emails %}
+        <a href="{{ url_for('new_answer', hidden_id= post.id) }}">Answer this question</a>
+  {% endif %}
   <!-- Modal -->
   <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">

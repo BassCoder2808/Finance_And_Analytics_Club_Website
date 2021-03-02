@@ -13,6 +13,9 @@ from flask_msearch import Search
 search = Search()
 search.init_app(app)
 
+emails = ['vedant.jolly@spit.ac.in', 'basscoder2808@gmail.com']
+hid_id = 0
+
 
 @app.route("/")
 @app.route("/home")
@@ -299,7 +302,7 @@ def new_question():
 @app.route("/question/<int:question_id>")
 def question(question_id):
     question = Question.query.get_or_404(question_id)
-    return render_template('question.html', title=question.title, post=question)
+    return render_template('question.html', title=question.title, post=question, emails=emails)
 
 
 @app.route("/question/<int:question_id>/update", methods=['GET', 'POST'])
@@ -363,3 +366,24 @@ def w_search():
     results = Question.query.msearch(keyword, limit=20).order_by(
         Question.date_posted.desc()).paginate(page=page, per_page=5)
     return render_template('allQuestions.html', posts=results)
+
+
+@app.route("/answer/<int:hidden_id>/new", methods=['GET', 'POST'])
+@login_required
+def new_answer(hidden_id):
+    form = AnswerForm()
+    global hid_id
+    if request.method == "GET":
+        print("Yes!!!!")
+        print(hidden_id)
+        hid_id = hidden_id
+    if form.validate_on_submit():
+        print("yess")
+        answer = Answer(title=form.title.data, content=form.content.data,
+                        answer=Question.query.filter_by(id=hid_id).first())
+        print(answer, hid_id)
+        db.session.add(answer)
+        db.session.commit()
+        flash("Your question has been successfully created!!!", 'success')
+        return redirect(url_for('question', question_id=form.hidden_id.data))
+    return render_template('create_answer.html', title='New Answer', form=form, legend="New Answer")
