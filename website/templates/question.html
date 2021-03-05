@@ -20,6 +20,18 @@
   {% if current_user.email in emails %}
         <a href="{{ url_for('new_answer', hidden_id= post.id) }}">Answer this question</a>
   {% endif %}
+  {% for ans in answers %}
+      <article class="media content-section">
+        <img class="rounded-circle article-img" src="{{ url_for('static',filename = 'profile_pics/' + ans.answer.author.image_file) }}">
+        <div class="media-body">
+          <div class="article-metadata">
+            <small class="text-muted">{{ ans.date_posted.strftime("%Y-%m-%d") }}</small>
+          </div>
+          <h2><a class="article-title" href="{{ url_for('post',post_id = post.id) }}">{{ ans.title }}</a></h2>
+          <p class="article-content">{{ ans.content }}</p>
+        </div>
+      </article>
+  {% endfor %}
   <!-- Modal -->
   <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">

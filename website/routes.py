@@ -302,7 +302,9 @@ def new_question():
 @app.route("/question/<int:question_id>")
 def question(question_id):
     question = Question.query.get_or_404(question_id)
-    return render_template('question.html', title=question.title, post=question, emails=emails)
+    answers = Answer.query.filter_by(question_id=question.id).all()
+    print(answers)
+    return render_template('question.html', title=question.title, post=question, emails=emails, answers=answers)
 
 
 @app.route("/question/<int:question_id>/update", methods=['GET', 'POST'])
@@ -379,11 +381,12 @@ def new_answer(hidden_id):
         hid_id = hidden_id
     if form.validate_on_submit():
         print("yess")
+        print(Question.query.filter_by(id=hid_id).first())
         answer = Answer(title=form.title.data, content=form.content.data,
                         answer=Question.query.filter_by(id=hid_id).first())
         print(answer, hid_id)
         db.session.add(answer)
         db.session.commit()
-        flash("Your question has been successfully created!!!", 'success')
-        return redirect(url_for('question', question_id=form.hidden_id.data))
+        flash("Your answer has been successfully added!!!", 'success')
+        return redirect(url_for('question', question_id=hid_id))
     return render_template('create_answer.html', title='New Answer', form=form, legend="New Answer")
